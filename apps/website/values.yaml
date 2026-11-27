@@ -1,10 +1,18 @@
 # Values for rpp-website's chart (chart/ in that repo). The image tag is set
 # in application.yaml, next to the chart revision.
 fullnameOverride: website
-replicaCount: 2
 # The platform publishes apps through Gateway API, not Ingress.
 ingress:
   enabled: false
+httpRoute:
+  enabled: true
+  parentRefs:
+    - {group: gateway.networking.k8s.io, kind: ListenerSet, name: rpp, namespace: gateway}
+  # The app itself redirects www to the apex domain.
+  hostnames:
+    - website.rpp.helium.app.rpp.gmbh
+    - rocketpadplatforms.de
+    - www.rocketpadplatforms.de
 resources:
   requests:
     # The platform requires the memory request to equal the limit (256Mi).
