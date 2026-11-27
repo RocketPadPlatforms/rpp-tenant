@@ -10,12 +10,13 @@ repository.
 ```text
 apps/<app>/application.yaml   the Argo CD Application, created by hand
 apps/<app>/values.yaml        values for the app's Helm chart
-apps/<app>/manifests/         plain manifests: Namespace, HTTPRoute, SealedSecrets
+apps/<app>/manifests/         optional plain manifests, e.g. SealedSecrets
 ```
 
-Each app has its own namespace `rpp-<app>` and its own Application in
-`tenants-rpp`. The chart stays in the app's repository: the Application takes
-the chart from there, and the values and manifests from here.
+Each app has its own namespace `rpp-<app>`, which Argo CD creates
+(`CreateNamespace=true`), and its own Application in `tenants-rpp`. The
+chart stays in the app's repository: the Application takes the chart from
+there, and the values and manifests from here.
 
 | App | Repository | Hosts |
 | --- | --- | --- |
@@ -54,7 +55,8 @@ merged.
 
 1. Create `apps/<app>/` like `apps/website/`, with the namespace
    `rpp-<app>` and an `HTTPRoute` on the ListenerSet `rpp` in namespace
-   `gateway`.
+   `gateway`, from the chart's values or in `manifests/`. A `manifests/`
+   folder needs its own source in the Application.
 2. Ask the platform operator to add the app's repository to the tenant (and
    its read-only token, sealed, if the repository is private) and any custom
    domains. Hosts under `*.rpp.helium.app.rpp.gmbh` need nothing.

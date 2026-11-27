@@ -11,20 +11,18 @@ spec:
   sources:
     # Chart and image from the same commit: targetRevision is its full hash, image.tag its first 7 characters.
     - repoURL: https://github.com/RocketPadPlatforms/rpp-website.git
-      targetRevision: 0d0e0da7ffa0d3a3c744a129a073cddb455b8a00
+      targetRevision: 2e918a0d6446c5782a4af0c4226d5b2069ac8e6b
       path: chart
       helm:
         releaseName: website
         valueFiles: [$values/apps/website/values.yaml]
         parameters:
-          - {name: image.tag, value: "0d0e0da", forceString: true}
+          - {name: image.tag, value: "2e918a0", forceString: true}
     - repoURL: https://github.com/RocketPadPlatforms/rpp-tenant.git
       targetRevision: main
       ref: values
-    - repoURL: https://github.com/RocketPadPlatforms/rpp-tenant.git
-      targetRevision: main
-      path: apps/website/manifests
   syncPolicy:
     automated: {prune: true, selfHeal: true}
+    syncOptions: [CreateNamespace=true]
     # The first sync can be forbidden for a moment, until the platform grants the new namespace.
     retry: {limit: 5, backoff: {duration: 10s, factor: 2, maxDuration: 3m}}
