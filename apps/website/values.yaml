@@ -1,0 +1,11 @@
+# Values for rpp-website's chart (chart/ in that repo). The image tag is set
+# in application.yaml, next to the chart revision.
+fullnameOverride: website
+replicaCount: 2
+# The platform publishes apps through Gateway API, not Ingress.
+ingress:
+  enabled: false
+resources:
+  requests:
+    # The platform requires the memory request to equal the limit (256Mi).
+    memory: 256Mi

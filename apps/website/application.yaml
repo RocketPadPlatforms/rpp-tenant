@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: website
+  namespace: tenants-rpp
+spec:
+  project: rpp
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rpp-website
+  sources:
+    # Chart and image from the same commit: targetRevision is its full hash, image.tag its first 7 characters.
+    - repoURL: https://github.com/RocketPadPlatforms/rpp-website.git
+      targetRevision: 0d0e0da7ffa0d3a3c744a129a073cddb455b8a00
+      path: chart
+      helm:
+        releaseName: website
+        valueFiles: [$values/apps/website/values.yaml]
+        parameters:
+          - {name: image.tag, value: "0d0e0da", forceString: true}
+    - repoURL: https://github.com/RocketPadPlatforms/rpp-tenant.git
+      targetRevision: main
+      ref: values
+    - repoURL: https://github.com/RocketPadPlatforms/rpp-tenant.git
+      targetRevision: main
+      path: apps/website/manifests
+  syncPolicy:
+    automated: {prune: true, selfHeal: true}
+    # The first sync can be forbidden for a moment, until the platform grants the new namespace.
+    retry: {limit: 5, backoff: {duration: 10s, factor: 2, maxDuration: 3m}}
